@@ -1,23 +1,19 @@
+<template>
+  <a-config-provider :locale="locale">
+    <div id="app">
+      <BasicLayout />
+    </div>
+  </a-config-provider>
+</template>
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import BasicLayout from '@/Layouts/BasicLayout.vue'
+import zhCN from 'ant-design-vue/es/locale/zh_CN'
+import BasicLayout from '@/layouts/BasicLayout.vue'
+import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
+import { ref } from 'vue'
+import '@/access.ts'
+const loginUserStore = useLoginUserStore()
+loginUserStore.fetchLoginUser()
+const locale = ref(zhCN)
 </script>
 
-<template>
-<!--  <header>-->
-<!--    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />-->
-
-<!--    <div class="wrapper">-->
-<!--      <HelloWorld msg="You did it!" />-->
-
-<!--      <nav>-->
-<!--        <RouterLink to="/">Home</RouterLink>-->
-<!--        <RouterLink to="/about">About</RouterLink>-->
-<!--      </nav>-->
-<!--    </div>-->
-<!--  </header>-->
-  <BasicLayout></BasicLayout>
-</template>
-
-<style scoped>
-</style>
+<style scoped></style>
