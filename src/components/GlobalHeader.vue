@@ -85,10 +85,15 @@ const originItems = [
     title: '用户管理',
   },
   {
-    key: 'baidu',
-    label: h('a', { href: 'https://baidu.com', target: '_blank' }, '百度'),
-    title: '百度',
+    key: '/add_picture',
+    label: '添加图片',
+    title: '添加图片',
   },
+  {
+    key: '/admin/pictureManage',
+    label: '图片管理',
+    title: '图片管理',
+  }
 ] as MenuItem[]
 const filterMenus = (items:MenuItem[]) => {
   return items?.filter((item) => {

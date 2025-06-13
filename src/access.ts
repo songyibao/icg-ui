@@ -14,6 +14,7 @@ router.beforeEach(async (to, from, next) => {
   if (toUrl.startsWith('/admin')) {
     if (!loginUser) {
       message.error('请先登录')
+      console.log("未登录，跳转到登录页,path:", toUrl);
       next({ path: '/login?redirect=' + toUrl })
     } else if (loginUser.userRole !== ADMIN) {
       message.error('无权限')
