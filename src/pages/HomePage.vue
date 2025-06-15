@@ -1,17 +1,7 @@
 <template>
   <div id="homePage">
-    <!-- 搜索框 -->
-    <div class="search-bar">
-      <a-input-search
-        placeholder="从海量图片中搜索"
-        v-model:value="searchParams.searchText"
-        enter-button="搜索"
-        size="large"
-        @search="doSearch"
-      />
-    </div>
     <!-- 分类 + 标签 -->
-    <a-tabs v-model:activeKey="selectedCategory" @change="doSearch">
+    <a-tabs v-model:activeKey="selectedCategory" @change="doSearch" style="height: 55px">
       <a-tab-pane key="all" tab="全部"/>
       <a-tab-pane v-for="category in categoryList" :key="category" :tab="category" />
     </a-tabs>
@@ -65,6 +55,16 @@
 
       </template>
     </a-list>
+    <!-- 搜索框 -->
+    <div class="search-bar">
+      <a-input-search
+        placeholder="从海量图片中搜索"
+        v-model:value="searchParams.searchText"
+        enter-button="搜索"
+        size="large"
+        @search="doSearch"
+      />
+    </div>
   </div>
 </template>
 <script setup lang="ts">

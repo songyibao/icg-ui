@@ -1,10 +1,41 @@
 <template>
   <div id="userManagePage">
+    <a-modal
+      v-model:open="modalVisible"
+      title="批量创建图片"
+      :confirm-loading="confirmLoading"
+      width="70%"
+      wrap-class-name="full-modal"
+      @ok="handleUploadPictureByBatch"
+    >
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }" :model="batchParams">
+        <!-- 批量抓取图片表单参数，包括数量、搜索关键词 -->
+        <a-form-item label="数量" name="count">
+          <a-input-number v-model:value="batchParams.count" :min="1" :max="30" />
+        </a-form-item>
+        <a-form-item label="关键词" name="searchText">
+          <a-input
+            v-model:value="batchParams.searchText"
+            placeholder="请输入关键词"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item label="图片名称前缀" name="searchText">
+          <a-input
+            v-model:value="batchParams.namePrefix"
+            placeholder="请指定图片名称前缀，留空默认使用关键词"
+            allow-clear
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
     <a-flex justify="space-between">
       <h2>图片管理</h2>
-      <a-button type="primary" href="/add_picture" target="_blank">+ 创建图片</a-button>
+      <a-flex>
+        <a-button type="primary" href="/add_picture" target="_blank">+ 创建图片</a-button>
+        <a-button type="primary" style="margin-left: 10px" @click="showModal">批量创建</a-button>
+      </a-flex>
     </a-flex>
-
     <a-form layout="inline" :model="searchParams" @finish="doSearch" style="margin-bottom: 16px">
       <a-form-item label="关键词" name="searchText">
         <a-input
@@ -35,7 +66,7 @@
         />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit">搜索</a-button>
+        <a-button type="primary" html-type="submit">筛选</a-button>
       </a-form-item>
     </a-form>
 
@@ -117,14 +148,36 @@ import dayjs from 'dayjs'
 import {
   deletePictureUsingPost,
   doPictureReviewUsingPost,
-  listPictureByPageUsingPost,
+  listPictureByPageUsingPost, uploadPictureByBatchUsingPost
 } from '@/api/pictureController.ts'
 import { DESC } from '@/constants/Database.const.ts'
 import {
   PIC_REVIEW_STATUS_ENUM,
   PIC_REVIEW_STATUS_OPTIONS,
 } from '@/constants/Picture.const.ts'
-
+const modalVisible = ref<boolean>(false)
+const showModal = () => {
+  modalVisible.value = true
+}
+const confirmLoading = ref<boolean>(false)
+const batchParams = reactive<API.PictureUploadByBatchRequest>({
+  count: 10,
+  searchText: undefined,
+  namePrefix: undefined
+})
+const handleUploadPictureByBatch = async() =>{
+  confirmLoading.value = true
+  const res = await uploadPictureByBatchUsingPost(batchParams)
+  if (res.data.code === 0) {
+    message.success('批量创建图片成功')
+    modalVisible.value = false
+    confirmLoading.value = false
+    // 重新获取列表
+    fetchData()
+  } else {
+    message.error('批量创建图片失败，' + res.data.message)
+  }
+}
 const columns = [
   {
     title: 'id',
