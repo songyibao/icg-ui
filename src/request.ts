@@ -3,7 +3,7 @@ import { message } from 'ant-design-vue'
 
 const myAxios = axios.create({
   baseURL: 'http://localhost:8888',
-  timeout: 1000,
+  timeout: 3000,
   withCredentials: true,
 })
 

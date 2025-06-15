@@ -1,7 +1,16 @@
 <template>
   <div id="addPicturePage">
     <h2 class="title">添加图片</h2>
-    <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+    <!-- 选择上传方式 -->
+    <a-tabs v-model:activeKey="uploadType"
+    >>
+      <a-tab-pane key="file" tab="文件上传">
+        <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+      </a-tab-pane>
+      <a-tab-pane key="url" tab="URL 上传" force-render>
+        <UrlPictureUpload :picture="picture" :onSuccess="onSuccess" />
+      </a-tab-pane>
+    </a-tabs>
     <a-form layout="vertical" :model="pictureForm" @finish="handleSubmit">
       <a-form-item label="名称" name="name">
         <a-input v-model:value="pictureForm.name" placeholder="请输入名称" />
@@ -44,6 +53,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { editPictureUsingPost, listPictureTagCategoryUsingGet } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
+import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 const picture = ref<API.PictureVO>()
 const pictureForm = reactive<API.PictureEditRequest>({})
 const onSuccess = (newPicture: API.PictureVO) => {
@@ -51,7 +61,7 @@ const onSuccess = (newPicture: API.PictureVO) => {
   pictureForm.name = newPicture.name
 }
 const router = useRouter()
-
+const uploadType = ref<'file' | 'url'>('file')
 /**
  * 提交表单
  * @param values

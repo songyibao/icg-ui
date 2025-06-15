@@ -25,15 +25,30 @@
           allow-clear
         />
       </a-form-item>
+      <a-form-item label="审核状态" name="reviewStatus">
+        <a-select
+          v-model:value="searchParams.reviewStatus"
+          :options="PIC_REVIEW_STATUS_OPTIONS"
+          placeholder="请选择审核状态"
+          style="min-width: 180px"
+          allow-clear
+        />
+      </a-form-item>
       <a-form-item>
         <a-button type="primary" html-type="submit">搜索</a-button>
       </a-form-item>
     </a-form>
 
-    <a-table :columns="columns" :data-source="dataList" :pagination="pagination" @change="doTableChange" :scroll="{ x: 'max-content' }">
+    <a-table
+      :columns="columns"
+      :data-source="dataList"
+      :pagination="pagination"
+      @change="doTableChange"
+      :scroll="{ x: 'max-content' }"
+    >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'url'">
-          <a-image :src="record.url" :width="120" style="border: #f0f1f2 1px solid"/>
+          <a-image :src="record.url" :width="120" style="border: #f0f1f2 1px solid" />
         </template>
         <!-- 标签 -->
         <template v-if="column.dataIndex === 'tags'">
@@ -55,24 +70,61 @@
         <template v-else-if="column.dataIndex === 'editTime'">
           {{ dayjs(record.editTime).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
+        <template v-if="column.dataIndex === 'reviewStatus'">
+          <!-- 居中显示上面的icon -->
+          <div style="text-align: center">
+            <CheckOutlined
+              v-if="record.reviewStatus === PIC_REVIEW_STATUS_ENUM.PASS"
+              style="color: #52c41a"
+            />
+            <CloseOutlined
+              v-else-if="record.reviewStatus === PIC_REVIEW_STATUS_ENUM.REJECT"
+              style="color: #ff4d4f"
+            />
+            <ClockCircleOutlined v-else style="color: #faad14" />
+          </div>
+        </template>
         <template v-else-if="column.key === 'action'">
           <a-space>
-            <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank">编辑</a-button>
+            <a-button
+              v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.PASS"
+              type="link"
+              @click="handleReview(record, PIC_REVIEW_STATUS_ENUM.PASS)"
+              >通过
+            </a-button>
+            <a-button
+              v-if="record.reviewStatus !== PIC_REVIEW_STATUS_ENUM.REJECT"
+              type="link"
+              danger
+              @click="handleReview(record, PIC_REVIEW_STATUS_ENUM.REJECT)"
+              >拒绝
+            </a-button>
+            <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank"
+              >编辑</a-button
+            >
             <a-button type="link" danger @click="handleDelete(record)">删除</a-button>
           </a-space>
-
         </template>
       </template>
-
     </a-table>
   </div>
 </template>
 <script lang="ts" setup>
+import { CheckOutlined, CloseOutlined, ClockCircleOutlined } from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
-import { deletePictureUsingPost, listPictureByPageUsingPost } from '@/api/pictureController.ts'
+import {
+  deletePictureUsingPost,
+  doPictureReviewUsingPost,
+  listPictureByPageUsingPost,
+} from '@/api/pictureController.ts'
 import { DESC } from '@/constants/Database.const.ts'
+import {
+  PIC_REVIEW_STATUS_ENUM,
+  PIC_REVIEW_STATUS_OPTIONS,
+} from '@/constants/Picture.const.ts'
+
 const columns = [
   {
     title: 'id',
@@ -118,11 +170,14 @@ const columns = [
     dataIndex: 'editTime',
   },
   {
+    title: '审核信息',
+    dataIndex: 'reviewStatus',
+  },
+  {
     title: '操作',
     key: 'action',
   },
 ]
-
 
 // 数据
 const dataList = ref([])
@@ -146,13 +201,29 @@ const pagination = computed(() => {
     showTotal: (total) => `共 ${total} 条`,
   }
 })
+const handleReview = async (record: API.Picture, reviewStatus: number) => {
+  const reviewMessage =
+    reviewStatus === PIC_REVIEW_STATUS_ENUM.PASS ? '管理员操作通过' : '管理员操作拒绝'
+  const res = await doPictureReviewUsingPost({
+    id: record.id,
+    reviewStatus,
+    reviewMessage,
+  })
+  if (res.data.code === 0) {
+    message.success('审核操作成功')
+    // 重新获取列表
+    fetchData()
+  } else {
+    message.error('审核操作失败，' + res.data.message)
+  }
+}
 
 // 获取数据
 const fetchData = async () => {
   console.log(searchParams)
   // const res = await listPictureByPageUsingPost(searchParams)
   const res = await listPictureByPageUsingPost({
-    ...searchParams
+    ...searchParams,
   })
   if (res.data.data) {
     dataList.value = res.data.data.records ?? []
