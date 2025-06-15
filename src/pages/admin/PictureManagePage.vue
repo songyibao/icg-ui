@@ -152,15 +152,15 @@ const columns = [
     title: '标签',
     dataIndex: 'tags',
   },
-  {
-    title: '图片信息',
-    dataIndex: 'picInfo',
-  },
-  {
-    title: '用户 id',
-    dataIndex: 'userId',
-    width: 80,
-  },
+  // {
+  //   title: '图片信息',
+  //   dataIndex: 'picInfo',
+  // },
+  // {
+  //   title: '用户 id',
+  //   dataIndex: 'userId',
+  //   width: 80,
+  // },
   {
     title: '创建时间',
     dataIndex: 'createTime',

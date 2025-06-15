@@ -1,20 +1,21 @@
 <template>
   <div id="globalHeader">
-    <a-row :wrap="false">
+    <a-row :wrap="false" style="height: 100%;display: flex;align-items: center">
       <a-col flex="120px">
         <div class="title-bar">
           <img class="logo" src="@/assets/logo.png" alt="logo" />
           <div class="title">yPic云图库</div>
         </div>
       </a-col>
-      <a-col flex="auto">
-        <div style="padding: 0 10px">
+      <a-col flex="auto" >
+        <div style="padding: 0 10px;">
           <a-menu
             class="menu"
             v-model:selectedKeys="current"
             mode="horizontal"
             :items="items"
             @click="doMenuClick"
+            style="border-bottom: none"
           />
         </div>
       </a-col>
@@ -112,7 +113,7 @@ const items = computed(() => filterMenus(originItems))
 #globalHeader {
   padding: 0 16px;
   background: #fff;
-  box-shadow: 0 2px 8px #f0f1f2;
+  border-bottom: 1px solid #eee;
   width: 100%;
 }
 #globalHeader .title-bar {
