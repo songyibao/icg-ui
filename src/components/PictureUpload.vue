@@ -23,6 +23,7 @@ import { ref } from 'vue'
 
 interface Props {
   picture?: API.PictureVO
+  spaceId?: number
   onSuccess?: (newPicture: API.PictureVO) => void
 }
 
@@ -44,11 +45,24 @@ const loading = ref<boolean>(false)
  * 上传
  * @param file
  */
+// {fileUrl?: string, id?: number, name?: string, spaceId?: number}
+interface UploadParams {
+  fileUrl?: string
+  id?: number
+  name?: string
+  spaceId?: number
+}
 const handleUpload = async ({ file }: any) => {
   loading.value = true
   try {
-    const params = props.picture ? { id: props.picture.id } : {};
-    const res = await uploadPictureUsingPost(params, {}, file)
+    const params: UploadParams = {}
+    if (props.spaceId) {
+      params.spaceId = props.spaceId
+    }
+    if(props.picture){
+      params.id = props.picture.id
+    }
+    const res = await uploadPictureUsingPost(params,{},file)
     if (res.data.code === 0 && res.data.data) {
       message.success('图片上传成功')
       // 将上传成功的图片信息传递给父组件

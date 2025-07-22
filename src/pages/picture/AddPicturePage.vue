@@ -1,14 +1,14 @@
 <template>
   <div id="addPicturePage">
-    <h2 class="title">添加图片</h2>
+    <h2 class="title">{{ route.query?.id ? '修改图片' : '创建图片' }}</h2>
     <!-- 选择上传方式 -->
     <a-tabs v-model:activeKey="uploadType"
     >>
       <a-tab-pane key="file" tab="文件上传">
-        <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+        <PictureUpload :picture="picture" :onSuccess="onSuccess" :spaceId="spaceId" />
       </a-tab-pane>
       <a-tab-pane key="url" tab="URL 上传" force-render>
-        <UrlPictureUpload :picture="picture" :onSuccess="onSuccess" />
+        <UrlPictureUpload :picture="picture" :onSuccess="onSuccess" :spaceId="spaceId" />
       </a-tab-pane>
     </a-tabs>
     <a-form layout="vertical" :model="pictureForm" @finish="handleSubmit">
@@ -41,17 +41,24 @@
           allowClear
         />
       </a-form-item>
+      <a-typography-paragraph v-if="spaceId" type="secondary">
+        保存至空间：<a :href="`/space/${spaceId}`" target="_blank">{{ spaceId }}</a>
+      </a-typography-paragraph>
       <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 100%">创建</a-button>
+        <a-button type="primary" html-type="submit" style="width: 100%">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
 </template>
 <script lang="ts" setup>
 import PictureUpload from '@/components/PictureUpload.vue'
-import { onMounted, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { editPictureUsingPost, listPictureTagCategoryUsingGet } from '@/api/pictureController.ts'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import {
+  editPictureUsingPost,
+  getPictureVoByIdUsingGet,
+  listPictureTagCategoryUsingGet
+} from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 const picture = ref<API.PictureVO>()
@@ -61,7 +68,33 @@ const onSuccess = (newPicture: API.PictureVO) => {
   pictureForm.name = newPicture.name
 }
 const router = useRouter()
+const route = useRoute()
 const uploadType = ref<'file' | 'url'>('file')
+
+// 空间 id
+const spaceId = computed(() => {
+  return route.query?.spaceId
+})
+
+// 获取老数据
+const getOldPicture = async () => {
+  // 获取到 id
+  const id = route.query?.id
+  if (id) {
+    const res = await getPictureVoByIdUsingGet({
+      id,
+    })
+    if (res.data.code === 0 && res.data.data) {
+      const data = res.data.data
+      picture.value = data
+      pictureForm.name = data.name
+      pictureForm.introduction = data.introduction
+      pictureForm.category = data.category
+      pictureForm.tags = data.tags
+    }
+  }
+}
+
 /**
  * 提交表单
  * @param values
@@ -73,6 +106,7 @@ const handleSubmit = async (values: any) => {
   }
   const res = await editPictureUsingPost({
     id: pictureId,
+    spaceId: spaceId.value,
     ...values,
   })
   if (res.data.code === 0 && res.data.data) {
@@ -112,6 +146,7 @@ const getTagCategoryOptions = async () => {
 
 onMounted(() => {
   getTagCategoryOptions()
+  getOldPicture()
 })
 
 </script>

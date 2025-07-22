@@ -1,49 +1,76 @@
 <template>
   <div id="basicLayout">
-    <GlobalHeader class="header"/>
-    <div class="content">
-      <RouterView />
-    </div>
-    <div class="footer">yPic智能协同云图库, by Syb</div>
+    <a-layout class="layout-wrapper">
+      <a-layout-header class="layout-header">
+        <GlobalHeader />
+      </a-layout-header>
+      <a-layout>
+        <a-layout-sider class="layout-sider">
+          <GlobalSider />
+        </a-layout-sider>
+        <a-layout-content class="layout-content">
+          <router-view />
+        </a-layout-content>
+      </a-layout>
+      <a-layout-footer class="layout-footer">
+        yPic智能协同云图库, by Syb
+      </a-layout-footer>
+    </a-layout>
   </div>
 </template>
 
 <script setup lang="ts">
-import GlobalHeader from '@/components/GlobalHeader.vue'
+import GlobalHeader from '@/components/GlobalHeader.vue';
+import GlobalSider from '@/components/GlobalSider.vue';
+// 移除了未使用的 store 和 CSSProperties
 </script>
 
 <style scoped>
 #basicLayout {
+  /* 确保根容器占满整个视口 */
+  height: 100vh;
+  width: 100%;
+}
+
+.layout-wrapper {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100vh; /* 使用 vh 单位确保占满整个视口高度 */
-  width: 100%;
 }
 
-#basicLayout .header {
-  position: fixed; /* 固定在视口顶部 */
-  left: 0;
-  top: 0;
-  width: 100%;
-  z-index: 1; /* 确保 header 在最上层 */
+.layout-header {
   background: #fff;
-  /* 假设 header 高度为 60px，可以根据实际情况调整 */
-  height: 50px;
+  border-bottom: 1px solid #ddd;
+  height: 64px;
+  padding-inline: 20px; /* 使用内联边距替代 text-align */
+  line-height: 64px;
+  flex-shrink: 0; /* 防止 Header 在 flex 布局中被压缩 */
 }
 
-#basicLayout .content {
-  flex: 1; /* 占据剩余的所有空间 */
-  /* 设置上内边距，防止内容被 header 遮挡，值应等于 header 的高度 */
-  padding: calc(50px + 10px) 10px 10px 10px;
-  overflow-y: auto; /* 当内容溢出时，仅内容区域出现滚动条 */
+.layout-sider {
+  background: #fff;
+  border-right: 1px solid #ddd;
+  flex-shrink: 0; /* 防止 Sider 被压缩 */
 }
 
-#basicLayout .footer {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px 0; /* 增加一些内边距让页脚更好看 */
-  flex-shrink: 0; /* 防止页脚被压缩 */
+.layout-content {
+  /* flex: 1 让内容区自动填充剩余空间 */
+  flex: 1;
+  /* 当内容超出时，允许垂直滚动 */
+  overflow-y: auto;
+  padding: 20px;
+  background: #f0f2f5; /* 使用一个更柔和的背景色 */
+}
+
+.layout-footer {
+  background: #efefef;
+  padding: 16px 0;
+  text-align: center;
+  flex-shrink: 0; /* 防止 Footer 被压缩 */
+}
+
+/* Ant Design Menu 样式覆盖 */
+#basicLayout :deep(.ant-menu-root) {
+  border: none !important;
 }
 </style>

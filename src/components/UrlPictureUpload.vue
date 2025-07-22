@@ -18,12 +18,12 @@ import { ref } from 'vue'
 import { message } from 'ant-design-vue'
 interface Props {
   picture?: API.PictureVO
+  spaceId?: number
   onSuccess?: (newPicture: API.PictureVO) => void
 }
 const props = defineProps<Props>()
 const loading = ref<boolean>(false)
 const fileUrl = ref<string>()
-
 const handleUpload = async () =>{
   if (!fileUrl.value) {
     message.error('请输入图片 URL')
@@ -31,6 +31,9 @@ const handleUpload = async () =>{
   }
   loading.value = true
   const params: API.PictureUploadRequest = { fileUrl: fileUrl.value }
+  if(props.spaceId) {
+    params.spaceId = props.spaceId
+  }
   if(props.picture) {
     params.id = props.picture.id
   }

@@ -33,6 +33,12 @@
                   <!--                    <setting-outlined />-->
                   <!--                    设置-->
                   <!--                  </a-menu-item>-->
+                  <a-menu-item>
+                    <router-link to="/my_space" >
+                      <UserOutlined />
+                      我的空间
+                    </router-link>
+                  </a-menu-item>
                   <a-menu-item
                     key="/logout"
                     style="text-align: center"
@@ -54,7 +60,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, h, ref, type VNode } from 'vue'
+import { computed, ref, type VNode } from 'vue'
 import { LogoutOutlined } from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
@@ -94,6 +100,11 @@ const originItems = [
     key: '/admin/pictureManage',
     label: '图片管理',
     title: '图片管理',
+  },
+  {
+    key: '/admin/spaceManage',
+    label: '空间管理',
+    title: '空间管理',
   }
 ] as MenuItem[]
 const filterMenus = (items:MenuItem[]) => {
@@ -110,12 +121,6 @@ const filterMenus = (items:MenuItem[]) => {
 const items = computed(() => filterMenus(originItems))
 </script>
 <style scoped>
-#globalHeader {
-  padding: 0 16px;
-  background: #fff;
-  border-bottom: 1px solid #eee;
-  width: 100%;
-}
 #globalHeader .title-bar {
   height: 100%;
   flex-shrink: 0;
