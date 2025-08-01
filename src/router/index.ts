@@ -10,6 +10,9 @@ import SpaceManagePage from '@/pages/admin/SpaceManagePage.vue'
 import AddSpacePage from '@/pages/space/AddSpacePage.vue'
 import MySpacePage from '@/pages/space/MySpacePage.vue'
 import SpaceDetailPage from '@/pages/space/SpaceDetailPage.vue'
+import ExplorePage from '@/pages/space/ExplorePage.vue'
+import PersonAlbumPage from '@/pages/space/PersonAlbumPage.vue'
+import SearchPicturePage from '@/pages/picture/SearchPicturePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -83,8 +86,22 @@ const router = createRouter({
       name: '空间详情',
       component: SpaceDetailPage,
       props: true,
+    },
+    {
+      path: '/space/explore',
+      name: '空间探索',
+      component: ExplorePage
+    },
+    {
+      path: '/cluster/:id', // :id 是动态的，对应人物簇的ID
+      name: 'ClusterDetail',
+      component: PersonAlbumPage // 确保路径正确
+    },
+    {
+      path: '/search_picture',
+      name: 'SearchPicture',
+      component: SearchPicturePage,
     }
-
   ],
 })
 

@@ -3,7 +3,7 @@
     <h2 class="title">{{ route.query?.id ? '修改图片' : '创建图片' }}</h2>
     <!-- 选择上传方式 -->
     <a-tabs v-model:activeKey="uploadType"
-    >>
+    >
       <a-tab-pane key="file" tab="文件上传">
         <PictureUpload :picture="picture" :onSuccess="onSuccess" :spaceId="spaceId" />
       </a-tab-pane>
@@ -11,6 +11,26 @@
         <UrlPictureUpload :picture="picture" :onSuccess="onSuccess" :spaceId="spaceId" />
       </a-tab-pane>
     </a-tabs>
+    <div v-if="picture" class="edit-bar">
+      <a-space>
+        <a-button :icon="h(EditOutlined)" @click="doEditPicture">编辑图片</a-button>
+        <a-button :icon="h(FullscreenOutlined)" @click="doImageOutPainting">AI 扩图</a-button>
+      </a-space>
+      <ImageCropper
+        ref="imageCropperRef"
+        :imageUrl="picture?.url"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onCropSuccess"
+      />
+      <ImageOutPainting
+        ref="imageOutPaintingRef"
+        :picture="picture"
+        :space-id="spaceId"
+        :on-success="onImageOutPaintingSuccess"
+        ></ImageOutPainting>
+    </div>
+
     <a-form layout="vertical" :model="pictureForm" @finish="handleSubmit">
       <a-form-item label="名称" name="name">
         <a-input v-model:value="pictureForm.name" placeholder="请输入名称" />
@@ -51,6 +71,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { h } from 'vue' // 显式导入 h 函数
 import PictureUpload from '@/components/PictureUpload.vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -61,6 +82,9 @@ import {
 } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
+import { EditOutlined,FullscreenOutlined } from '@ant-design/icons-vue'
+import ImageCropper from '@/components/ImageCropper.vue'
+import ImageOutPainting from '@/components/ImageOutPainting.vue'
 const picture = ref<API.PictureVO>()
 const pictureForm = reactive<API.PictureEditRequest>({})
 const onSuccess = (newPicture: API.PictureVO) => {
@@ -82,7 +106,7 @@ const getOldPicture = async () => {
   const id = route.query?.id
   if (id) {
     const res = await getPictureVoByIdUsingGet({
-      id,
+      id
     })
     if (res.data.code === 0 && res.data.data) {
       const data = res.data.data
@@ -148,6 +172,30 @@ onMounted(() => {
   getTagCategoryOptions()
   getOldPicture()
 })
+const imageCropperRef = ref()
+const doEditPicture = () => {
+  // 打开图片编辑器
+  imageCropperRef.value?.openModal()
+}
+
+const onCropSuccess = (croppedPicture: API.PictureVO) => {
+  // 更新图片信息
+  picture.value = croppedPicture
+}
+// AI 扩图弹窗引用
+const imageOutPaintingRef = ref()
+
+// AI 扩图
+const doImageOutPainting = () => {
+  if (imageOutPaintingRef.value) {
+    imageOutPaintingRef.value.openModal()
+  }
+}
+
+// 编辑成功事件
+const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
 
 </script>
 <style scoped>

@@ -30,6 +30,11 @@ const menuItems = [
     label: '我的空间',
     icon: () => h(UserOutlined),
   },
+  {
+    key: '/space/explore',
+    label: '空间探索',
+    icon: () => h(PictureOutlined),
+  }
 ]
 
 const router = useRouter()

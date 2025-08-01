@@ -23,6 +23,13 @@
         </a-tooltip>
       </a-space>
     </a-flex>
+    <!-- 搜索表单 -->
+    <PictureSearchForm :onSearch="onSearch" />
+    <!-- 按颜色搜索 -->
+    <a-form-item label="按颜色搜索" style="margin-top: 16px">
+      <color-picker format="hex" @pureColorChange="onColorChange" />
+    </a-form-item>
+    <div style="height: 5px"></div>
     <!-- 图片列表 -->
     <PictureList :dataList="dataList" :loading="loading" :onReload="fetchData" show-operation/>
     <a-pagination
@@ -38,11 +45,16 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { DESC } from '@/constants/Database.const.ts'
-import { listPictureVoByPageUsingPost } from '@/api/pictureController.ts'
+import {
+  listPictureVoByPageUsingPost,
+  searchPictureByColorUsingPost
+} from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import { getSpaceVoByIdUsingGet } from '@/api/spaceController.ts'
 import { formatSpaceSize } from '@/utils'
 import PictureList from '@/components/PictureList.vue'
+import PictureSearchForm from '@/components/PictureSearchForm.vue'
+import { ColorPicker } from 'vue3-colorpicker'
 
 const props = defineProps<{
   id: number
@@ -59,6 +71,20 @@ const searchParams = ref<API.PictureQueryRequest>({
   sortField: 'createTime',
   sortOrder: DESC,
 })
+const onColorChange = async (color: string) => {
+  const res = await searchPictureByColorUsingPost({
+    picColor: color,
+    spaceId: props.id,
+  })
+  if (res.data.code === 0 && res.data.data) {
+    const data = res.data.data ?? [];
+    dataList.value = data;
+    total.value = data.length;
+  } else {
+    message.error('获取数据失败，' + res.data.message)
+  }
+}
+
 const fetchSpaceDetail = async () => {
   if (!props.id) {
     message.error('空间参数为空')
@@ -82,8 +108,17 @@ const fetchData = async () => {
   }
   loading.value = false
 }
-const onPageChange = (page: number) => {
+const onSearch = (params: API.PictureQueryRequest) => {
+  searchParams.value = {
+    ...searchParams.value,
+    ...params,
+    currentPage: 1, // 重置到第一页
+  }
+  fetchData()
+}
+const onPageChange = (page: number,pageSize: number) => {
   searchParams.value.currentPage = page
+  searchParams.value.pageSize = pageSize
   fetchData()
 }
 

@@ -1,13 +1,64 @@
 declare namespace API {
+  type AiDetectedFaceVO = {
+    clusterId?: number
+    id?: number
+    pictureThumbnailUrl?: string
+    pictureUrl?: string
+  }
+
+  type AiPersonClusterVO = {
+    coverFaceArea?: Record<string, any>
+    coverFacePictureUrl?: string
+    displayName?: string
+    faceCount?: number
+    id?: number
+  }
+
   type BaseResponseBoolean_ = {
     code?: number
     data?: boolean
     message?: string
   }
 
+  type BaseResponseCreateOutPaintingTaskResponse_ = {
+    code?: number
+    data?: CreateOutPaintingTaskResponse
+    message?: string
+  }
+
+  type BaseResponseGetOutPaintingTaskResponse_ = {
+    code?: number
+    data?: GetOutPaintingTaskResponse
+    message?: string
+  }
+
   type BaseResponseInt_ = {
     code?: number
     data?: number
+    message?: string
+  }
+
+  type BaseResponseListAiDetectedFaceVO_ = {
+    code?: number
+    data?: AiDetectedFaceVO[]
+    message?: string
+  }
+
+  type BaseResponseListAiPersonClusterVO_ = {
+    code?: number
+    data?: AiPersonClusterVO[]
+    message?: string
+  }
+
+  type BaseResponseListImageSearchResult_ = {
+    code?: number
+    data?: ImageSearchResult[]
+    message?: string
+  }
+
+  type BaseResponseListPictureVO_ = {
+    code?: number
+    data?: PictureVO[]
     message?: string
   }
 
@@ -95,8 +146,30 @@ declare namespace API {
     message?: string
   }
 
+  type CreateOutPaintingTaskResponse = {
+    code?: string
+    message?: string
+    output?: Output
+    requestId?: string
+  }
+
+  type CreatePictureOutPaintingTaskRequest = {
+    parameters?: Parameters
+    pictureId?: number
+  }
+
   type DeleteRequest = {
     id?: number
+  }
+
+  type GetOutPaintingTaskResponse = {
+    output?: Output1
+    requestId?: string
+  }
+
+  type getOutPaintingTaskUsingGETParams = {
+    /** taskId */
+    taskId: string
   }
 
   type getPictureByIdUsingGETParams = {
@@ -129,6 +202,17 @@ declare namespace API {
     id: number
   }
 
+  type ImageSearchResult = {
+    fromSiteName?: string
+    fromUrl?: string
+    thumbUrl?: string
+  }
+
+  type listClusterDetectedFacesUsingGETParams = {
+    /** id */
+    id: number
+  }
+
   type LoginUserVO = {
     id?: number
     userAccount?: string
@@ -136,6 +220,23 @@ declare namespace API {
     userName?: string
     userProfile?: string
     userRole?: string
+  }
+
+  type Output = {
+    taskId?: string
+    taskStatus?: string
+  }
+
+  type Output1 = {
+    code?: string
+    endTime?: string
+    message?: string
+    outputImageUrl?: string
+    scheduledTime?: string
+    submitTime?: string
+    taskId?: string
+    taskMetrics?: TaskMetrics
+    taskStatus?: string
   }
 
   type PagePicture_ = {
@@ -170,6 +271,11 @@ declare namespace API {
     total?: number
   }
 
+  type Parameters = {
+    xScale?: number
+    yScale?: number
+  }
+
   type Picture = {
     category?: string
     createTime?: string
@@ -178,6 +284,7 @@ declare namespace API {
     introduction?: string
     isDelete?: number
     name?: string
+    picColor?: string
     picFormat?: string
     picHeight?: number
     picScale?: number
@@ -206,6 +313,7 @@ declare namespace API {
   type PictureQueryRequest = {
     category?: string
     currentPage?: number
+    endEditTime?: string
     id?: number
     introduction?: string
     name?: string
@@ -222,6 +330,7 @@ declare namespace API {
     sortField?: string
     sortOrder?: string
     spaceId?: number
+    startEditTime?: string
     tags?: string[]
     userId?: number
   }
@@ -265,6 +374,7 @@ declare namespace API {
     id?: number
     introduction?: string
     name?: string
+    picColor?: string
     picFormat?: string
     picHeight?: number
     picScale?: number
@@ -277,6 +387,15 @@ declare namespace API {
     url?: string
     user?: UserVO
     userId?: number
+  }
+
+  type SearchPictureByColorRequest = {
+    picColor?: string
+    spaceId?: number
+  }
+
+  type SearchPictureByPictureRequest = {
+    pictureId?: number
   }
 
   type Space = {
@@ -343,6 +462,12 @@ declare namespace API {
     updateTime?: string
     user?: UserVO
     userId?: number
+  }
+
+  type TaskMetrics = {
+    failed?: number
+    succeeded?: number
+    total?: number
   }
 
   type uploadPictureUsingPOSTParams = {

@@ -1,6 +1,7 @@
 <template>
   <div class="picture-list">
     <!-- 图片列表 -->
+    <ShareModal title="分享图片" :link="shareLink" ref="shareModalRef"/>
     <a-list
       :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }"
       :data-source="dataList"
@@ -31,16 +32,11 @@
               </template>
             </a-card-meta>
             <template v-if="showOperation" #actions>
-              <a-space @click="e => doEdit(picture, e)">
-                <edit-outlined/>
-                编辑
-              </a-space>
-              <a-space @click="e => doDelete(picture, e)">
-                <delete-outlined />
-                删除
-              </a-space>
+              <edit-outlined @click="(e) => doEdit(picture, e)" />
+              <search-outlined @click="(e) => doSearch(picture, e)" />
+              <ShareAltOutlined @click="(e) => doShare(picture, e)" />
+              <delete-outlined @click="(e) => doDelete(picture, e)" />
             </template>
-
           </a-card>
         </a-list-item>
       </template>
@@ -52,18 +48,21 @@
 import { useRouter } from 'vue-router'
 import { deletePictureUsingPost } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
-import {EditOutlined, DeleteOutlined} from '@ant-design/icons-vue'
+import { EditOutlined, DeleteOutlined, SearchOutlined, ShareAltOutlined} from '@ant-design/icons-vue'
+import { ref } from 'vue'
+import ShareModal from '@/components/ShareModal.vue'
 
 interface Props {
   dataList?: API.PictureVO[]
-  loading?: boolean,
-  showOperation?: boolean,
+  loading?: boolean
+  showOperation?: boolean
   onReload?: () => void
 }
+
 const props = withDefaults(defineProps<Props>(), {
   dataList: () => [],
   loading: false,
-  showOperation:false,
+  showOperation: false,
   onReload: () => {},
 })
 // 跳转至图片详情
@@ -85,6 +84,26 @@ const doEdit = (picture, e) => {
   })
 }
 
+// 搜索
+const doSearch = (picture, e) => {
+  e.stopPropagation()
+  router.push({
+    name: 'SearchPicture',
+    query: { pictureId: picture.id },
+  })
+}
+const shareModalRef = ref()
+const shareLink = ref<string>("")
+const doShare = (picture,e) => {
+  e.stopPropagation()
+  if (!picture.id) {
+    message.error('图片 ID 为空，无法分享')
+    return
+  }
+  shareLink.value = `${window.location.origin}/picture/${picture.id}`
+  shareModalRef.value?.showModal()
+}
+
 // 删除
 const doDelete = async (picture, e) => {
   e.stopPropagation()
@@ -101,7 +120,6 @@ const doDelete = async (picture, e) => {
     message.error('删除失败')
   }
 }
-
 </script>
 
 <style scoped></style>
