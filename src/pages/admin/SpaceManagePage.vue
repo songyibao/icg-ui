@@ -18,7 +18,13 @@
         <a-button type="primary" html-type="submit">检索</a-button>
       </a-form-item>
       <a-space>
-        <a-button type="primary" @click="goToAddPage">+ 创建空间</a-button>
+        <a-button type="primary" href="/add_space" target="_blank">+ 创建空间</a-button>
+        <a-button type="primary" ghost href="/space_analyze?queryPublic=1" target="_blank">
+          分析公共图库
+        </a-button>
+        <a-button type="primary" ghost href="/space_analyze?queryAll=1" target="_blank">
+          分析全空间
+        </a-button>
       </a-space>
     </a-form>
     <a-table :columns="columns" :data-source="dataList" :pagination="pagination">
@@ -49,6 +55,9 @@
             <a-button danger>删除</a-button>
           </a-popconfirm>
           <a-button type="link" @click="goToUpdatePage(record.id)">编辑</a-button>
+          <a-button type="link" :href="`/space_analyze?spaceId=${record.id}`" target="_blank">
+            分析
+          </a-button>
         </template>
       </template>
     </a-table>

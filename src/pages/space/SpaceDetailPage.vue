@@ -4,20 +4,30 @@
     <a-flex justify="space-between">
       <h2>{{ space.spaceName }}（私有空间）</h2>
       <a-space size="middle">
-<!--        <a-button type="primary" :href="`/add_picture?spaceId=${space.id}`">-->
-<!--          创建图片-->
-<!--        </a-button>-->
+        <!--        <a-button type="primary" :href="`/add_picture?spaceId=${space.id}`">-->
+        <!--          创建图片-->
+        <!--        </a-button>-->
         <a-button type="primary">
-          <router-link :to="{path: '/add_picture', query: { spaceId: id }}">
+          <router-link :to="{ path: '/add_picture', query: { spaceId: id } }">
             创建图片
           </router-link>
         </a-button>
+        <a-button
+          type="primary"
+          ghost
+          :icon="h(BarChartOutlined)"
+          :href="`/space_analyze?spaceId=${id}`"
+          target="_blank"
+        >
+          空间分析
+        </a-button>
+
         <a-tooltip
-          :title="`占用空间 ${formatSpaceSize(space.totalSize??0)} / ${formatSpaceSize(space.maxSize??0)}`"
+          :title="`占用空间 ${formatSpaceSize(space.totalSize ?? 0)} / ${formatSpaceSize(space.maxSize ?? 0)}`"
         >
           <a-progress
             type="circle"
-            :percent="(((space.totalSize??0) * 100) / (space.maxSize??0)).toFixed(1)"
+            :percent="(((space.totalSize ?? 0) * 100) / (space.maxSize ?? 0)).toFixed(1)"
             :size="42"
           />
         </a-tooltip>
@@ -31,7 +41,7 @@
     </a-form-item>
     <div style="height: 5px"></div>
     <!-- 图片列表 -->
-    <PictureList :dataList="dataList" :loading="loading" :onReload="fetchData" show-operation/>
+    <PictureList :dataList="dataList" :loading="loading" :onReload="fetchData" show-operation />
     <a-pagination
       style="text-align: right"
       v-model:current="searchParams.currentPage"
@@ -43,11 +53,13 @@
   </div>
 </template>
 <script setup lang="ts">
+import { h } from 'vue'
+import { BarChartOutlined } from '@ant-design/icons-vue'
 import { onMounted, ref } from 'vue'
 import { DESC } from '@/constants/Database.const.ts'
 import {
   listPictureVoByPageUsingPost,
-  searchPictureByColorUsingPost
+  searchPictureByColorUsingPost,
 } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import { getSpaceVoByIdUsingGet } from '@/api/spaceController.ts'
@@ -77,9 +89,9 @@ const onColorChange = async (color: string) => {
     spaceId: props.id,
   })
   if (res.data.code === 0 && res.data.data) {
-    const data = res.data.data ?? [];
-    dataList.value = data;
-    total.value = data.length;
+    const data = res.data.data ?? []
+    dataList.value = data
+    total.value = data.length
   } else {
     message.error('获取数据失败，' + res.data.message)
   }
@@ -102,7 +114,7 @@ const fetchSpaceDetail = async () => {
 const fetchData = async () => {
   loading.value = true
   const res = await listPictureVoByPageUsingPost(searchParams.value)
-  if(res.data.code === 0 && res.data.data){
+  if (res.data.code === 0 && res.data.data) {
     dataList.value = res.data.data.records ?? []
     total.value = res.data.data.total ?? 0
   }
@@ -116,13 +128,13 @@ const onSearch = (params: API.PictureQueryRequest) => {
   }
   fetchData()
 }
-const onPageChange = (page: number,pageSize: number) => {
+const onPageChange = (page: number, pageSize: number) => {
   searchParams.value.currentPage = page
   searchParams.value.pageSize = pageSize
   fetchData()
 }
 
-onMounted(()=>{
+onMounted(() => {
   fetchSpaceDetail()
   fetchData()
   // 获取空间信息

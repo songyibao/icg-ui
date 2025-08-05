@@ -62,9 +62,39 @@ declare namespace API {
     message?: string
   }
 
+  type BaseResponseListSpace_ = {
+    code?: number
+    data?: Space[]
+    message?: string
+  }
+
+  type BaseResponseListSpaceCategoryAnalyzeResponse_ = {
+    code?: number
+    data?: SpaceCategoryAnalyzeResponse[]
+    message?: string
+  }
+
   type BaseResponseListSpaceLevel_ = {
     code?: number
     data?: SpaceLevel[]
+    message?: string
+  }
+
+  type BaseResponseListSpacePictureSizeAnalyzeResponse_ = {
+    code?: number
+    data?: SpacePictureSizeAnalyzeResponse[]
+    message?: string
+  }
+
+  type BaseResponseListSpaceTagAnalyzeResponse_ = {
+    code?: number
+    data?: SpaceTagAnalyzeResponse[]
+    message?: string
+  }
+
+  type BaseResponseListSpaceUserAnalyzeResponse_ = {
+    code?: number
+    data?: SpaceUserAnalyzeResponse[]
     message?: string
   }
 
@@ -125,6 +155,12 @@ declare namespace API {
   type BaseResponseSpace_ = {
     code?: number
     data?: Space
+    message?: string
+  }
+
+  type BaseResponseSpaceUsageAnalyzeResponse_ = {
+    code?: number
+    data?: SpaceUsageAnalyzeResponse
     message?: string
   }
 
@@ -272,6 +308,15 @@ declare namespace API {
   }
 
   type Parameters = {
+    addWatermark?: boolean
+    angle?: number
+    bestQuality?: boolean
+    bottomOffset?: number
+    leftOffset?: number
+    limitImageSize?: boolean
+    outputRatio?: string
+    rightOffset?: number
+    topOffset?: number
     xScale?: number
     yScale?: number
   }
@@ -418,6 +463,18 @@ declare namespace API {
     spaceName?: string
   }
 
+  type SpaceCategoryAnalyzeRequest = {
+    queryAll?: boolean
+    queryPublic?: boolean
+    spaceId?: number
+  }
+
+  type SpaceCategoryAnalyzeResponse = {
+    category?: string
+    count?: number
+    totalSize?: number
+  }
+
   type SpaceEditRequest = {
     id?: number
     spaceName?: string
@@ -428,6 +485,17 @@ declare namespace API {
     maxSize?: number
     text?: string
     value?: number
+  }
+
+  type SpacePictureSizeAnalyzeRequest = {
+    queryAll?: boolean
+    queryPublic?: boolean
+    spaceId?: number
+  }
+
+  type SpacePictureSizeAnalyzeResponse = {
+    count?: number
+    sizeRange?: string
   }
 
   type SpaceQueryRequest = {
@@ -441,12 +509,55 @@ declare namespace API {
     userId?: number
   }
 
+  type SpaceRankAnalyzeRequest = {
+    topN?: number
+  }
+
+  type SpaceTagAnalyzeRequest = {
+    queryAll?: boolean
+    queryPublic?: boolean
+    spaceId?: number
+  }
+
+  type SpaceTagAnalyzeResponse = {
+    count?: number
+    tag?: string
+  }
+
   type SpaceUpdateRequest = {
     id?: number
     maxCount?: number
     maxSize?: number
     spaceLevel?: number
     spaceName?: string
+  }
+
+  type SpaceUsageAnalyzeRequest = {
+    queryAll?: boolean
+    queryPublic?: boolean
+    spaceId?: number
+  }
+
+  type SpaceUsageAnalyzeResponse = {
+    countUsageRatio?: number
+    maxCount?: number
+    maxSize?: number
+    sizeUsageRatio?: number
+    usedCount?: number
+    usedSize?: number
+  }
+
+  type SpaceUserAnalyzeRequest = {
+    queryAll?: boolean
+    queryPublic?: boolean
+    spaceId?: number
+    timeDimension?: string
+    userId?: number
+  }
+
+  type SpaceUserAnalyzeResponse = {
+    count?: number
+    period?: string
   }
 
   type SpaceVO = {
