@@ -1,6 +1,6 @@
 <template>
   <div id="addSpacePage">
-    <h2 class="title">{{buttonText}}空间</h2>
+    <h2 class="title">{{buttonText}}{{spaceType==0?"私有":"团队"}}空间</h2>
     <a-form layout="vertical" :model="spaceForm" @finish="handleSubmit">
       <a-form-item
         label="名称"
@@ -29,7 +29,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import {
   addSpaceUsingPost,
@@ -37,7 +37,7 @@ import {
   listSpaceLevelUsingGet,
   updateSpaceUsingPost,
 } from '@/api/spaceController.ts'
-import { SPACE_LEVEL_OPTIONS } from '@/constants/Space.const.ts'
+import { SPACE_LEVEL_OPTIONS, SPACE_TYPE_ENUM, SPACE_TYPE_MAP } from '@/constants/Space.const.ts'
 import { formatSpaceSize } from '@/utils'
 import { useRoute } from 'vue-router'
 import router from '@/router'
@@ -53,15 +53,25 @@ const oldSpace = ref<API.SpaceVO>()
 const sapceLevelList = ref<API.SpaceLevel[]>([])
 const spaceForm = reactive<API.SpaceAddRequest>({})
 const buttonText = ref('创建')
+
+// 空间类别
+const spaceType = computed(() => {
+  if (route.query?.type) {
+    return Number(route.query.type)
+  }
+  return SPACE_TYPE_ENUM.PRIVATE
+})
+
+
 /**
  * 提交表单
  * @param values
  */
 const handleSubmit = async () => {
-  if (spaceForm.spaceLevel !== 0) {
-    message.warning('目前仅支持开通普通版空间，请联系管理员进行升级')
-    return
-  }
+  // if (spaceForm.spaceLevel !== 0) {
+  //   message.warning('目前仅支持开通普通版空间，请联系管理员进行升级')
+  //   return
+  // }
   const spaceId = oldSpace.value?.id
   if (spaceId) {
     // 更新
@@ -79,7 +89,10 @@ const handleSubmit = async () => {
       })
     }
   } else {
-    const res = await addSpaceUsingPost(spaceForm)
+    const res = await addSpaceUsingPost({
+      ...spaceForm,
+      spaceType: spaceType.value,
+    })
     if (res.data.code === 0 && res.data.data) {
       message.success('创建成功')
       router.push({
