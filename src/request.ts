@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
+import { baseURL } from '../appConfig.ts'
 
 const myAxios = axios.create({
-  baseURL: 'http://localhost:8888',
+  baseURL: baseURL,
   timeout: 3000,
   withCredentials: true,
 })

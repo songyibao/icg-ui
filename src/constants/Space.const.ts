@@ -11,6 +11,12 @@ export const SPACE_LEVEL_MAP: Record<number, string> = {
   1: '专业版',
   2: '旗舰版',
 };
+// ant design 标签<a-tag>颜色映射
+export const SPACE_LEVEL_A_TAG_COLOR_MAP: Record<number, string> = {
+  0: 'green',
+  1: 'blue',
+  2: 'orange',
+}
 
 // 空间级别选项映射
 export const SPACE_LEVEL_OPTIONS = Object.keys(SPACE_LEVEL_MAP).map((key) => {
@@ -31,6 +37,11 @@ export const SPACE_TYPE_MAP: Record<number, string> = {
   0: '私有空间',
   1: '团队空间',
 }
+// ant design 标签<a-tag>颜色映射
+export const SPACE_TYPE_A_TAG_COLOR_MAP: Record<number, string> = {
+  0: 'blue',
+  1: 'orange',
+}
 
 // 空间类型选项映射
 export const SPACE_TYPE_OPTIONS = Object.keys(SPACE_TYPE_MAP).map((key) => {
@@ -46,6 +57,7 @@ export const SPACE_ROLE_ENUM = {
   VIEWER: "viewer",
   EDITOR: "editor",
   ADMIN: "admin",
+  OWNER: "owner",
 } as const;
 
 // 空间角色文本映射
@@ -53,6 +65,7 @@ export const SPACE_ROLE_MAP: Record<string, string> = {
   viewer: "浏览者",
   editor: "编辑者",
   admin: "管理员",
+  owner: "创建者",
 };
 
 // 空间角色选项映射

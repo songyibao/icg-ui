@@ -86,17 +86,28 @@
 </template>
 <script setup lang="ts">
 import { message } from 'ant-design-vue'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import {DownloadOutlined,ShareAltOutlined} from '@ant-design/icons-vue'
 import { getPictureVoByIdUsingGet } from '@/api/pictureController.ts'
 import dayjs from 'dayjs'
 import { downloadImage, toHexColor } from '@/utils'
 import ShareModal from '@/components/ShareModal.vue'
+import { SPACE_PERMISSION_ENUM } from '@/constants/Space.const.ts'
 
 const props = defineProps<{
   id: string | number
 }>()
 const picture = ref<API.PictureVO>({})
+// 通用权限检查函数
+function createPermissionChecker(permission: string) {
+  return computed(() => {
+    return (picture.value.permissionList ?? []).includes(permission)
+  })
+}
+
+// 定义权限检查
+const canEdit = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_EDIT)
+const canDelete = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_DELETE)
 
 // 获取图片详情
 const fetchPictureDetail = async () => {

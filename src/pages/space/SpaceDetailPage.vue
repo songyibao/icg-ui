@@ -2,12 +2,12 @@
   <div id="SpaceDetailPage">
     <!-- 空间信息 -->
     <a-flex justify="space-between">
-      <h2>{{ space.spaceName }}（私有空间）</h2>
+      <h2>{{ space.spaceName }}</h2>
       <a-space size="middle">
         <!--        <a-button type="primary" :href="`/add_picture?spaceId=${space.id}`">-->
         <!--          创建图片-->
         <!--        </a-button>-->
-        <a-button type="primary">
+        <a-button type="primary" v-if="canUploadPicture">
           <router-link :to="{ path: '/add_picture', query: { spaceId: id } }">
             创建图片
           </router-link>
@@ -20,6 +20,16 @@
           target="_blank"
         >
           空间分析
+        </a-button>
+        <a-button
+          v-if="canManageSpaceUser"
+          type="primary"
+          ghost
+          :icon="h(TeamOutlined)"
+          :href="`/spaceUserManage/${id}`"
+          target="_blank"
+        >
+          成员管理
         </a-button>
 
         <a-tooltip
@@ -41,7 +51,14 @@
     </a-form-item>
     <div style="height: 5px"></div>
     <!-- 图片列表 -->
-    <PictureList :dataList="dataList" :loading="loading" :onReload="fetchData" show-operation />
+    <PictureList
+      :dataList="dataList"
+      :loading="loading"
+      :onReload="fetchData"
+      show-operation
+      :can-delete="canDeletePicture"
+      :can-edit="canEditPicture"
+    />
     <a-pagination
       style="text-align: right"
       v-model:current="searchParams.currentPage"
@@ -53,8 +70,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { h } from 'vue'
-import { BarChartOutlined } from '@ant-design/icons-vue'
+import { computed, h, watch } from 'vue'
+import { BarChartOutlined, TeamOutlined } from '@ant-design/icons-vue'
 import { onMounted, ref } from 'vue'
 import { DESC } from '@/constants/Database.const.ts'
 import {
@@ -67,6 +84,7 @@ import { formatSpaceSize } from '@/utils'
 import PictureList from '@/components/PictureList.vue'
 import PictureSearchForm from '@/components/PictureSearchForm.vue'
 import { ColorPicker } from 'vue3-colorpicker'
+import { SPACE_PERMISSION_ENUM, SPACE_TYPE_ENUM } from '@/constants/Space.const.ts'
 
 const props = defineProps<{
   id: number
@@ -83,6 +101,19 @@ const searchParams = ref<API.PictureQueryRequest>({
   sortField: 'createTime',
   sortOrder: DESC,
 })
+
+// 通用权限检查函数
+function createPermissionChecker(permission: string) {
+  return computed(() => {
+    return (space.value.permissionList ?? []).includes(permission)
+  })
+}
+
+// 定义权限检查
+const canManageSpaceUser = createPermissionChecker(SPACE_PERMISSION_ENUM.SPACE_USER_MANAGE)
+const canUploadPicture = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_UPLOAD)
+const canEditPicture = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_EDIT)
+const canDeletePicture = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_DELETE)
 const onColorChange = async (color: string) => {
   const res = await searchPictureByColorUsingPost({
     picColor: color,
@@ -113,7 +144,10 @@ const fetchSpaceDetail = async () => {
 }
 const fetchData = async () => {
   loading.value = true
-  const res = await listPictureVoByPageUsingPost(searchParams.value)
+  const res = await listPictureVoByPageUsingPost({
+    ...searchParams.value,
+    spaceId: props.id,
+  })
   if (res.data.code === 0 && res.data.data) {
     dataList.value = res.data.data.records ?? []
     total.value = res.data.data.total ?? 0
@@ -133,6 +167,13 @@ const onPageChange = (page: number, pageSize: number) => {
   searchParams.value.pageSize = pageSize
   fetchData()
 }
+watch(
+  () => props.id,
+  (newSpaceId) => {
+    fetchSpaceDetail()
+    fetchData()
+  },
+)
 
 onMounted(() => {
   fetchSpaceDetail()

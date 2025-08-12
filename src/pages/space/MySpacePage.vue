@@ -26,7 +26,7 @@ const checkUserSpace = async () => {
     const space = res.data.data
     if (space.id) {
       // 如果有空间，跳转到空间详情页
-      router.replace(`/space/${space.id}`)
+      await router.replace(`/space/${space.id}`)
     } else {
       message.error('加载我的空间失败，' + res.data.message)
     }

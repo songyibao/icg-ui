@@ -58,7 +58,7 @@ import GlobalSider from '@/components/GlobalSider.vue';
   flex: 1;
   /* 当内容超出时，允许垂直滚动 */
   overflow-y: auto;
-  padding: 20px;
+  padding: 10px;
   background: #f0f2f5; /* 使用一个更柔和的背景色 */
 }
 

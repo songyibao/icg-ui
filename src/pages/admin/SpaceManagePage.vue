@@ -30,7 +30,14 @@
     <a-table :columns="columns" :data-source="dataList" :pagination="pagination">
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'spaceLevel'">
-          <a-tag>{{ SPACE_LEVEL_MAP[record.spaceLevel] }}</a-tag>
+          <a-tag :color="SPACE_LEVEL_A_TAG_COLOR_MAP[record.spaceLevel]">
+            {{ SPACE_LEVEL_MAP[record.spaceLevel] }}
+          </a-tag>
+        </template>
+        <template v-if="column.dataIndex === 'spaceType'">
+          <a-tag :color="SPACE_TYPE_A_TAG_COLOR_MAP[record.spaceType]">
+            {{ SPACE_TYPE_MAP[record.spaceType] }}
+          </a-tag>
         </template>
         <template v-if="column.dataIndex === 'spaceUseInfo'">
           <div>
@@ -69,7 +76,14 @@ import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import { DESC } from '@/constants/Database.const.ts'
 import { deleteSpaceUsingPost, listSpaceByPageUsingPost } from '@/api/spaceController.ts'
-import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS } from '@/constants/Space.const.ts'
+import {
+  SPACE_LEVEL_A_TAG_COLOR_MAP,
+  SPACE_LEVEL_MAP,
+  SPACE_LEVEL_OPTIONS,
+  SPACE_TYPE_A_TAG_COLOR_MAP,
+  SPACE_TYPE_ENUM,
+  SPACE_TYPE_MAP,
+} from '@/constants/Space.const.ts'
 import { formatSpaceSize } from '@/utils'
 import { useRoute } from 'vue-router'
 import router from '@/router'
@@ -87,6 +101,10 @@ const columns = [
   {
     title: '空间级别',
     dataIndex: 'spaceLevel',
+  },
+  {
+    title: '空间类别',
+    dataIndex: 'spaceType',
   },
   {
     title: '使用情况',
