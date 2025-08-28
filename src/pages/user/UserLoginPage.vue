@@ -27,9 +27,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { loginUsingPost } from '@/api/userController.ts'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
+import { storeToRefs } from 'pinia'
 import router from '@/router'
 import { message } from 'ant-design-vue'
 
@@ -38,26 +39,32 @@ const formState = reactive<API.UserLoginRequest>({
   userPassword: '',
 })
 const loginUserStore = useLoginUserStore()
-const handleSubmit = async (values: any) => {
-  console.log(values)
+const { isLogin } = storeToRefs(loginUserStore)
+
+const goBackAfterLogin = () => {
+  const redirect = router.currentRoute.value.query.redirect as string
+  router.push({ path: redirect || '/', replace: true })
+}
+
+onMounted(async () => {
+  // 若已登录，直接跳转回来源页/首页；否则尝试刷新登录态
+  if (isLogin.value) {
+    goBackAfterLogin()
+  } else {
+    await loginUserStore.fetchLoginUser()
+    if (isLogin.value) {
+      goBackAfterLogin()
+    }
+  }
+})
+
+const handleSubmit = async (values: API.UserLoginRequest) => {
   const { data } = await loginUsingPost(values)
   if (data.code === 0 && data.data) {
     loginUserStore.setLoginUser(data.data)
-    if (loginUserStore.isLogin) {
+    if (isLogin.value) {
       message.success('登录成功')
-      // 跳转回之前的页面
-      const redirect = router.currentRoute.value.query.redirect as string
-      if (redirect) {
-        router.push({
-          path: redirect,
-          replace: true,
-        })
-      } else {
-        router.push({
-          path: '/',
-          replace: true,
-        })
-      }
+      goBackAfterLogin()
     }
   }
 }
