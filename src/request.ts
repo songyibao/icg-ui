@@ -1,9 +1,11 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
-import { baseURL } from '../appConfig.ts'
+
+// 直接使用 Vite 环境变量
+const baseURL: string = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8001'
 
 const myAxios = axios.create({
-  baseURL: baseURL,
+  baseURL,
   timeout: 3000,
   withCredentials: true,
 })

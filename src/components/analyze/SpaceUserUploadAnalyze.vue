@@ -5,7 +5,7 @@
       <template #extra>
         <a-space>
           <a-segmented v-model:value="timeDimension" :options="timeDimensionOptions" />
-          <a-input-search placeholder="请输入用户 id" enter-button="搜索用户" @search="doSearch" />
+          <a-input-search placeholder="请输入用户 id" enter-button="搜索用户" @search="doSearch" v-if="loginUser.userRole==ADMIN"/>
         </a-space>
       </template>
     </a-card>
@@ -17,6 +17,8 @@ import { computed, ref, watchEffect } from 'vue'
 import { getSpaceUserAnalyzeUsingPost } from '@/api/spaceAnalyzeController.ts'
 import { message } from 'ant-design-vue'
 import VChart from 'vue-echarts'
+import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
+import { ADMIN } from '@/constants/UserRole.const.ts'
 interface Props {
   queryAll?: boolean
   queryPublic?: boolean
@@ -27,10 +29,12 @@ const props = withDefaults(defineProps<Props>(), {
   queryAll: false,
   queryPublic: false,
 })
+const loginUserStore = useLoginUserStore()
+const loginUser = loginUserStore.loginUser
 // 图表数据
 const dataList = ref<API.SpaceUserAnalyzeResponse[]>([])
 const loading = ref(true)
-const userId = ref<string>()
+const userId = ref<string>(loginUser.id)
 const timeDimension = ref<string>('day')
 const timeDimensionOptions = [
   {

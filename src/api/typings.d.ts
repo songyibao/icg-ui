@@ -194,6 +194,12 @@ declare namespace API {
     message?: string
   }
 
+  type BaseResponseUserVO_ = {
+    code?: number
+    data?: UserVO
+    message?: string
+  }
+
   type CreateOutPaintingTaskResponse = {
     code?: string
     message?: string
@@ -645,6 +651,7 @@ declare namespace API {
   }
 
   type User = {
+    admin?: boolean
     createTime?: string
     editTime?: string
     id?: number

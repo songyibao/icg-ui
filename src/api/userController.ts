@@ -58,7 +58,7 @@ export async function getUserVoByIdUsingGet(
   params: API.getUserVOByIdUsingGETParams,
   options?: { [key: string]: any }
 ) {
-  return request<API.BaseResponseLoginUserVO_>('/api/user/get/vo', {
+  return request<API.BaseResponseUserVO_>('/api/user/get/vo', {
     method: 'GET',
     params: {
       ...params,
@@ -102,7 +102,7 @@ export async function logoutUsingPost(options?: { [key: string]: any }) {
   })
 }
 
-/** register POST /api/user/register */
+/** 用户注册 用户注册接口 POST /api/user/register */
 export async function registerUsingPost(
   body: API.UserRegisterRequest,
   options?: { [key: string]: any }

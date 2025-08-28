@@ -1,9 +1,7 @@
-import { HOST, PORT } from '../../appConfig.ts'
-
 export default class PictureEditWebSocket {
   private pictureId: number
   private socket: WebSocket | null
-  private eventHandlers: any
+  private eventHandlers: Record<string, Array<(data?: unknown) => void>>
 
   constructor(pictureId: number) {
     this.pictureId = pictureId // 当前编辑的图片 ID
@@ -15,7 +13,11 @@ export default class PictureEditWebSocket {
    * 初始化 WebSocket 连接
    */
   connect() {
-    const url = `ws://${HOST}:${PORT}/api/ws/picture/edit?pictureId=${this.pictureId}`
+    const httpBase = (import.meta.env.VITE_API_BASE_URL as string) || 'http://127.0.0.1:8001'
+    // 将 http/https 转成 ws/wss
+    const wsBase = httpBase.replace(/^http(s?):\/\//, (_m, s1) => (s1 ? 'wss://' : 'ws://'))
+
+    const url = `${wsBase.replace(/\/$/, '')}/api/ws/picture/edit?pictureId=${this.pictureId}`
     this.socket = new WebSocket(url)
 
     // 设置携带 cookie
@@ -78,7 +80,7 @@ export default class PictureEditWebSocket {
    * @param {string} type 消息类型
    * @param {Function} handler 消息处理函数
    */
-  on(type: string, handler: (data?: any) => void) {
+  on(type: string, handler: (data?: unknown) => void) {
     if (!this.eventHandlers[type]) {
       this.eventHandlers[type] = []
     }
@@ -90,10 +92,10 @@ export default class PictureEditWebSocket {
    * @param {string} type 消息类型
    * @param {Object} data 消息数据
    */
-  triggerEvent(type: string, data?: any) {
+  triggerEvent(type: string, data?: unknown) {
     const handlers = this.eventHandlers[type]
     if (handlers) {
-      handlers.forEach((handler: any) => handler(data))
+      handlers.forEach((handler) => handler(data))
     }
   }
 }
